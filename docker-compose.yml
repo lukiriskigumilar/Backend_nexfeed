@@ -1,0 +1,37 @@
+services:
+  backend_nexfeed:
+    build: .
+    container_name: backend_nexfeed
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev
+    environment:
+      - .env
+    depends_on:
+      - postgres13
+      - redis8
+  postgres13:
+    image: postgres:13
+    container_name: postgres13
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  redis8:
+    image: redis:8
+    container_name: redis8
+    restart: always
+    ports:
+      - "6379:6379"
+volumes:
+  pgdata: 
+  redisdata:
