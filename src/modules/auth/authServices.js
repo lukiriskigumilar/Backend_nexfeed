@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 
 import AppError from '../../helpers/appError.js';
 import repository from './authRepository.js';
+import redisClient from '../../config/cache/redisClient.js';
 
 
 const registerUser = async (data) => {
@@ -113,4 +114,28 @@ const loginUser = async (data, ua, ipAddress) => {
 
 }
 
-export default {registerUser,loginUser}
+const logOutUser = async (userId, accessToken) => {
+ 
+   const whereClause = {
+        id_user: userId,
+    }
+    const sessions = await repository.findSessions(whereClause);
+    if (!sessions || sessions.length === 0){
+        throw new AppError('No active sessions found', 404);
+    }
+    const now = new Date();
+    const dataToUpdate ={
+        is_revoked: true,
+        deleted_at: now,
+    }
+    await repository.updateSession(sessions.id,dataToUpdate);
+
+    const ttl = 25 * 60 * 60; // 25 hours in seconds
+    await redisClient.set(`blacklist_access_token:${accessToken}`, 'revoked', 'EX', ttl);
+    return {
+        success:true,
+        message: 'Logged out successfully'
+    }
+   
+}
+export default {registerUser,loginUser, logOutUser}

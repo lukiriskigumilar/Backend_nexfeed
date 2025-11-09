@@ -9,7 +9,20 @@ const findUser = async (whereClause) => {
 
 const createUser = async (data) => (await prisma.users.create({data}))
 
+const findSessions = async (whereClause) => {
+    return await prisma.sessions.findFirst({
+        where: whereClause
+    });
+}
+
 const createSession = async (data) => (await prisma.sessions.create({data}))
 
+const updateSession = async (id, dataToUpdate) => {
+    return await prisma.sessions.update({
+        where: {id: id},
+        data: dataToUpdate
+    });
+}
 
-export default{findUser,createUser,createSession}
+
+export default{findUser,createUser,createSession,updateSession,findSessions}

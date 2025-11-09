@@ -1,4 +1,5 @@
 import express from 'express';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 
 import { bodyValidator } from '../validators/bodyValidator.js';
 import {loginSchema, registerSchema} from '../validators/auth/authValidator.js';
@@ -9,5 +10,8 @@ const authRoutes = express.Router();
 authRoutes.post('/register',bodyValidator(registerSchema),authControllers.registerUserController );
 
 authRoutes.post('/login', bodyValidator(loginSchema), authControllers.loginUserController);
+
+authRoutes.post('/logout', authMiddleware, authControllers.logOutUserController);
+
 
 export default authRoutes;
