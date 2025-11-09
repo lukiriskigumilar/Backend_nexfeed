@@ -30,17 +30,18 @@ model follows {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model sessions {
-  id                String   @id @db.VarChar(255)
-  id_user           String   @db.VarChar(255)
-  refresh_token     String   @db.VarChar(255)
-  device            String   @db.VarChar(255)
-  user_agent        Json     @db.Json
-  refresh_token_exp DateTime @db.Timestamp(6)
+  id                String    @id @db.VarChar(255)
+  id_user           String    @db.VarChar(255)
+  refresh_token     String    @db.VarChar(255)
+  device            String    @db.VarChar(255)
+  user_agent        Json      @db.Json
+  refresh_token_exp DateTime  @db.Timestamp(6)
   is_revoked        Boolean
-  access_token      String   @db.VarChar(255)
-  created_at        DateTime @db.Timestamp(6)
-  ip_address        String?  @db.VarChar
-  users             users    @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sessions_users_fk")
+  access_token      String    @db.VarChar(255)
+  created_at        DateTime  @db.Timestamp(6)
+  ip_address        String?   @db.VarChar
+  deleted_at        DateTime? @db.Timestamp(6)
+  users             users     @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sessions_users_fk")
 }
 
 model users {
