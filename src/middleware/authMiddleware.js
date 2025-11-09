@@ -2,10 +2,10 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { sendErrorResponse } from '../helpers/responseHelper';
-import AppError from '../helpers/appError';
+import { sendErrorResponse } from '../helpers/responseHelper.js';
+import AppError from '../helpers/appError.js';
 
-import redisClient from '../config/cache/redisClient';
+import redisClient from '../config/cache/redisClient.js';
 
 const authMiddleware = async (req,res,next) => {
     
@@ -16,7 +16,7 @@ const authMiddleware = async (req,res,next) => {
     }
 
     try {
-        const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+        const decoded = jwt.verify(accessToken, process.env.JWT_SECRET_TOKEN);
         const isBlacklisted = await redisClient.get(
             `blacklist_access_token:${accessToken}`
         )
