@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -19,37 +20,38 @@ model feeds {
 }
 
 model follows {
-  id                               String @id @db.VarChar(255)
-  follower_id                      String @db.VarChar(255)
-  followee_id                      String @db.VarChar(255)
-  created_at                       String @db.VarChar(255)
-  users_follows_followee_idTousers users  @relation("follows_followee_idTousers", fields: [followee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "follows_followee_id_foreign")
-  users_follows_follower_idTousers users  @relation("follows_follower_idTousers", fields: [follower_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "follows_follower_id_foreign")
+  id                               String   @id @db.VarChar(255)
+  follower_id                      String   @db.VarChar(255)
+  followee_id                      String   @db.VarChar(255)
+  created_at                       DateTime @db.Timestamp(6)
+  users_follows_followee_idTousers users    @relation("follows_followee_idTousers", fields: [followee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "follows_followee_id_foreign")
+  users_follows_follower_idTousers users    @relation("follows_follower_idTousers", fields: [follower_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "follows_follower_id_foreign")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model sessions {
-  id                String  @id @db.VarChar(255)
-  id_user           String  @db.VarChar(255)
-  refresh_token     String  @db.VarChar(255)
-  device            String  @db.VarChar(255)
-  user_agent        String  @db.VarChar(255)
-  refresh_token_exp String  @db.VarChar(255)
+  id                String   @id @db.VarChar(255)
+  id_user           String   @db.VarChar(255)
+  refresh_token     String   @db.VarChar(255)
+  device            String   @db.VarChar(255)
+  user_agent        Json     @db.Json
+  refresh_token_exp DateTime @db.Timestamp(6)
   is_revoked        Boolean
-  access_token      String  @db.VarChar(255)
-  created_at        String  @db.VarChar(255)
-  users             users   @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sessions_id_foreign")
+  access_token      String   @db.VarChar(255)
+  created_at        DateTime @db.Timestamp(6)
+  ip_address        String?  @db.VarChar
+  users             users    @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sessions_users_fk")
 }
 
 model users {
-  id                                 String    @id @db.VarChar(255)
-  username                           String    @unique(map: "users_username_unique") @db.VarChar(255)
-  password                           String    @db.VarChar(255)
-  created_at                         DateTime  @db.Timestamp(0)
-  updated_at                         DateTime? @db.Timestamp(0)
-  deleted_at                         DateTime? @db.Timestamp(0)
+  id                                 String     @id @db.VarChar(255)
+  username                           String     @unique(map: "users_username_unique") @db.VarChar(255)
+  password                           String     @db.VarChar(255)
+  created_at                         DateTime   @db.Timestamp(0)
+  updated_at                         DateTime?  @db.Timestamp(0)
+  deleted_at                         DateTime?  @db.Timestamp(0)
   feeds                              feeds[]
-  follows_follows_followee_idTousers follows[] @relation("follows_followee_idTousers")
-  follows_follows_follower_idTousers follows[] @relation("follows_follower_idTousers")
-  sessions                           sessions?
+  follows_follows_followee_idTousers follows[]  @relation("follows_followee_idTousers")
+  follows_follows_follower_idTousers follows[]  @relation("follows_follower_idTousers")
+  sessions                           sessions[]
 }
