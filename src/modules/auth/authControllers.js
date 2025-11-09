@@ -19,4 +19,22 @@ const registerUserController = async (req,res) => {
     }
 }
 
-export default {registerUserController}
+const loginUserController = async (req,res,next) => {
+    const data = req.body;
+    const ua = req.useragent;
+    const ipAddress = req.headers['x-forwarded-for'] || req.ip || req.connection.remoteAddress;
+    try {
+        const user = await authServices.loginUser(data, ua, ipAddress);
+        sendSuccessResponse(res, 'login successfully', user, null, 200);
+    } catch (error) {
+        sendErrorResponse(
+            res,
+            'login failed',
+            [error.message],
+            error.statusCode
+        );
+        next(error);
+    }
+}
+
+export default {registerUserController,loginUserController}

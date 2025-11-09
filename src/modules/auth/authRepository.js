@@ -9,5 +9,7 @@ const findUser = async (whereClause) => {
 
 const createUser = async (data) => (await prisma.users.create({data}))
 
+const createSession = async (data) => (await prisma.sessions.create({data}))
 
-export default{findUser,createUser}
+
+export default{findUser,createUser,createSession}
