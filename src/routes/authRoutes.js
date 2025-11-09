@@ -13,5 +13,7 @@ authRoutes.post('/login', bodyValidator(loginSchema), authControllers.loginUserC
 
 authRoutes.post('/logout', authMiddleware, authControllers.logOutUserController);
 
+authRoutes.post('/token', authControllers.getNewAccessTokenController);
+
 
 export default authRoutes;

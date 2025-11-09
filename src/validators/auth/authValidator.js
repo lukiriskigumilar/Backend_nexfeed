@@ -16,7 +16,13 @@ const loginSchema = joi.object(
     }
 )
 
+const generateTokenSchema = joi.object(
+    {
+        refresh_token: joi.string().uuid().required(),
+    }
+)
 export {
     registerSchema,
-    loginSchema
+    loginSchema,
+    generateTokenSchema
 }

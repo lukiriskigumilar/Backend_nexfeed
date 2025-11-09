@@ -30,6 +30,9 @@ const authMiddleware = async (req,res,next) => {
         }
         next();
     } catch (error) {
+          if (error.name === 'TokenExpiredError') {
+        return sendErrorResponse(res, 'Token expired', ['Token is expired'], 401);
+    }
         if (error instanceof AppError) {
             return sendErrorResponse(res, error.message, [error.message], error.statusCode);
         }

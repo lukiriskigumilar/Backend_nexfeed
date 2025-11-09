@@ -117,7 +117,7 @@ const loginUser = async (data, ua, ipAddress) => {
 const logOutUser = async (userId, accessToken) => {
  
    const whereClause = {
-        id_user: userId,
+       access_token: accessToken,
     }
     const sessions = await repository.findSessions(whereClause);
     if (!sessions || sessions.length === 0){
@@ -138,4 +138,44 @@ const logOutUser = async (userId, accessToken) => {
     }
    
 }
-export default {registerUser,loginUser, logOutUser}
+
+const getNewAccessToken = async (refreshToken) => {
+    const whereClause = {
+        refresh_token: refreshToken
+    }
+    const dateNow = new Date();
+    const findSessions = await repository.findSessions(whereClause);
+    if (!findSessions){
+        throw new AppError('Session not found', 404);
+    }
+    if (findSessions.is_revoked){
+        throw new AppError('Refresh token is revoked', 401);
+    }
+    if (findSessions.refresh_token_exp < dateNow){
+        throw new AppError('Refresh token is expired', 401);
+    }
+    const user = await repository.findUser({id: findSessions.id_user});
+    if (!user){
+        throw new AppError('User not found', 404);
+    }
+
+    await redisClient.set(`blacklist_access_token:${findSessions.access_token}`, 'revoked', 'EX', 25*60*60);
+    const newAccessToken = jwt.sign(
+        {
+            id:user.id,
+            username:user.username
+        },
+        process.env.JWT_SECRET_TOKEN,
+        {expiresIn:process.env.JWT_VALIDITY}
+    )
+    const dataToUpdate = {
+        access_token: newAccessToken
+    }
+    await repository.updateSession(findSessions.id, dataToUpdate);
+    return {
+        access_token: newAccessToken,
+        token_type: "Bearer",
+        expires_in: process.env.JWT_VALIDITY
+    }
+}
+export default {registerUser,loginUser, logOutUser, getNewAccessToken}
