@@ -9,7 +9,7 @@ const app = express();
 dotenv.config();
 const PORT = 8000;
 
-app.use(express.json());
+app.use(express.json()); 
 app.use(useragent.express());
 
 app.use(`/api/${process.env.API_VERSION}`, routes);
