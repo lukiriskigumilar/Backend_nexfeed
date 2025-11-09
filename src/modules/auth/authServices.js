@@ -104,6 +104,7 @@ const loginUser = async (data, ua, ipAddress) => {
 
     return {
         success:true,
+        id_user:user.id,
         access_token: accessToken,
         refresh_token: refreshToken,
         token_type: "Bearer",
