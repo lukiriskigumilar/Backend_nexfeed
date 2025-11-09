@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import * as useragent from 'express-useragent';
 
 import routes from './src/routes/routes.js';
 import { errorHandler } from './src/middleware/errorHandler.js';
@@ -9,6 +10,7 @@ dotenv.config();
 const PORT = 8000;
 
 app.use(express.json());
+app.use(useragent.express());
 
 app.use(`/api/${process.env.API_VERSION}`, routes);
 app.use(errorHandler);
