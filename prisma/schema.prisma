@@ -20,12 +20,13 @@ model feeds {
 }
 
 model follows {
-  id                               String   @id @db.VarChar(255)
-  follower_id                      String   @db.VarChar(255)
-  followee_id                      String   @db.VarChar(255)
-  created_at                       DateTime @db.Timestamp(6)
-  users_follows_followee_idTousers users    @relation("follows_followee_idTousers", fields: [followee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "follows_followee_id_foreign")
-  users_follows_follower_idTousers users    @relation("follows_follower_idTousers", fields: [follower_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "follows_follower_id_foreign")
+  id                                String   @id @db.VarChar(255)
+  followers_id                      String   @db.VarChar(255)
+  following_id                      String   @db.VarChar(255)
+  created_at                        DateTime @db.Timestamp(6)
+  users_follows_following_idTousers users    @relation("follows_following_idTousers", fields: [following_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "follows_followee_id_foreign")
+  users_follows_followers_idTousers users    @relation("follows_followers_idTousers", fields: [followers_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "follows_follower_id_foreign")
+  @@map("follows")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -45,14 +46,14 @@ model sessions {
 }
 
 model users {
-  id                                 String     @id @db.VarChar(255)
-  username                           String     @unique(map: "users_username_unique") @db.VarChar(255)
-  password                           String     @db.VarChar(255)
-  created_at                         DateTime   @db.Timestamp(0)
-  updated_at                         DateTime?  @db.Timestamp(0)
-  deleted_at                         DateTime?  @db.Timestamp(0)
-  feeds                              feeds[]
-  follows_follows_followee_idTousers follows[]  @relation("follows_followee_idTousers")
-  follows_follows_follower_idTousers follows[]  @relation("follows_follower_idTousers")
-  sessions                           sessions[]
+  id                                  String     @id @db.VarChar(255)
+  username                            String     @unique(map: "users_username_unique") @db.VarChar(255)
+  password                            String     @db.VarChar(255)
+  created_at                          DateTime   @db.Timestamp(0)
+  updated_at                          DateTime?  @db.Timestamp(0)
+  deleted_at                          DateTime?  @db.Timestamp(0)
+  feeds                               feeds[]
+  follows_follows_following_idTousers follows[]  @relation("follows_following_idTousers")
+  follows_follows_followers_idTousers follows[]  @relation("follows_followers_idTousers")
+  sessions                            sessions[]
 }
