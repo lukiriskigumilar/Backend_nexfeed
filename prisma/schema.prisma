@@ -10,13 +10,13 @@ datasource db {
 }
 
 model feeds {
-  id         String   @id @db.VarChar(255)
-  user_id    String   @db.VarChar(255)
-  content    String   @db.VarChar(255)
-  created_at DateTime @db.Timestamp(0)
-  updated_at DateTime @db.Timestamp(0)
-  deleted_at DateTime @db.Timestamp(0)
-  users      users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "feeds_user_id_foreign")
+  id         String    @id @db.VarChar(255)
+  user_id    String    @db.VarChar(255)
+  content    String    @db.VarChar(255)
+  created_at DateTime  @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  deleted_at DateTime? @db.Timestamp(0)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "feeds_user_id_foreign")
 }
 
 model follows {
@@ -26,6 +26,7 @@ model follows {
   created_at                        DateTime @db.Timestamp(6)
   users_follows_following_idTousers users    @relation("follows_following_idTousers", fields: [following_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "follows_followee_id_foreign")
   users_follows_followers_idTousers users    @relation("follows_followers_idTousers", fields: [followers_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "follows_follower_id_foreign")
+
   @@map("follows")
 }
 

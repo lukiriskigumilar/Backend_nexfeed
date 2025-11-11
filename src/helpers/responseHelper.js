@@ -2,6 +2,7 @@
 const sendSuccessResponse = (res, message ,data = [], pagination = null, statusCode = 200,) => {
     const responseData = {
         success: true,
+        statusCode:statusCode,
         message,
         data
     }
@@ -14,6 +15,7 @@ const sendSuccessResponse = (res, message ,data = [], pagination = null, statusC
 const sendErrorResponse = (res, message,  errors = [], statusCode = 500) => {
     return res.status(statusCode).json({
         success: false,
+        statusCode:statusCode,
         message,
         errors
     });
