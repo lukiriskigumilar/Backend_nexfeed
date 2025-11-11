@@ -23,7 +23,6 @@ const authMiddleware = async (req,res,next) => {
         if (isBlacklisted){
             throw new AppError('Access token is revoked', 401);
         }
-        req.accessToken = accessToken;
         req.user = {
             id: decoded.id,
             username: decoded.username,

@@ -5,7 +5,7 @@ export const bodyValidator = (schema) => {
             return res.status(415).json({ error: 'Unsupported Media Type. Please use application/json' });
         }
 
-        // Validasi body sekali saja
+      
         const { error } = schema.validate(req.body, { abortEarly: false });
         if (error) {
             return res.status(400).json({
@@ -15,7 +15,7 @@ export const bodyValidator = (schema) => {
             });
         }
 
-        // Jika validasi lolos
+  
         next();
     }
 }
