@@ -36,9 +36,7 @@ const getFeedById = async (id) => {
 };
 
 const getMainFeed = async (userId, page, limit) => {
-  console.log(page)
   const currentPage = Math.max(parseInt(page), 1);
-
   const following = await feedRepository.getFollowingUser(userId);
   if (following.length === 0) {
     return {
