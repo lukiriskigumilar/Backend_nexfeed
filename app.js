@@ -34,6 +34,6 @@ app.use(useragent.express());
 app.use(`/api/${process.env.API_VERSION}`, routes);
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${process.env.PORT || PORT}/`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
