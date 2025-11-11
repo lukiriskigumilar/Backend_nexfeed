@@ -1,0 +1,1433 @@
+openapi: 3.0.0
+info:
+  title: NEXFEED API Documentation
+  version: 1.0.0
+  description: Documentation API
+servers:
+  - url: http://example.com/api/v1
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /auth/register:
+    post:
+      summary: Register user baru
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: jays
+                password:
+                  type: string
+                  example: secret1234
+      responses:
+        "200":
+          description: Register berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: register successfully
+                  data:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                        example: jays
+        "400":
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Validation errors
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: '"username" is not allowed to be empty'
+        "409":
+          description: Username sudah digunakan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 409
+                  message:
+                    type: string
+                    example: Register failed
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: username already taken
+  /auth/login:
+    post:
+      summary: Log in an existing user
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: jays
+                password:
+                  type: string
+                  example: secret1234
+      responses:
+        "200":
+          description: Successfully logged in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: login successfully
+                  data:
+                    type: object
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      id_user:
+                        type: string
+                        example: eb431356-d8f1-4a29-91e5-d49b47eae85b
+                      access_token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      refresh_token:
+                        type: string
+                        example: 22c5b7f7-8de1-4939-8565-6fd58a001176
+                      token_type:
+                        type: string
+                        example: Bearer
+                      expires_in:
+                        type: string
+                        example: 24h
+        "400":
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Validation errors
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: '"username" is not allowed to be empty'
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: login failed
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Invalid password
+  /auth/logout:
+    post:
+      summary: Log out a user
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: logout successfully
+                  data:
+                    type: string
+                    nullable: true
+                    example: null
+        "401":
+          description: Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Invalid token
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Token is invalid
+  /auth/token:
+    post:
+      summary: Request a new access token
+      description: |
+        Generate a new access token using a valid refresh token.  
+        **A valid refresh token is required in the request body.**  
+        If the user's session has already been logged out but they attempt to request a new access token using a refresh token, the server will return a 401 error response.
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+                  example: 054ec332-95f7-4078-bef9-508e5c0e9368
+      responses:
+        "200":
+          description: Successfully generated new access token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: New access token generated successfully
+                  data:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      token_type:
+                        type: string
+                        example: Bearer
+                      expires_in:
+                        type: string
+                        example: 24h
+        "400":
+          description: Validation error (missing refresh token)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Validation errors
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: '"refresh_token" is required'
+        "401":
+          description: Invalid or expired refresh token (user already logged out)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Invalid refresh token
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Token is invalid or session already logged out
+
+  ## USER MODULES
+  /user/current-user:
+    get:
+      summary: Get current user data
+      description: |
+        Returns the information of the currently authenticated user.  
+        Requires a valid **Bearer JWT access token** in the `Authorization` header.  
+        If the token is revoked, invalid, or missing, a 401 error will be returned.
+      tags: [User]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successfully retrieved current user data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: get data successfully
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: eb431356-d8f1-4a29-91e5-d49b47eae85b
+                      username:
+                        type: string
+                        example: jays
+                      total_following:
+                        type: integer
+                        example: 0
+                      total_followers:
+                        type: integer
+                        example: 0
+        "401":
+          description: Invalid, missing, or revoked access token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Access token is revoked
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Access token is revoked
+  /user/{id}:
+    get:
+      summary: Get user data by ID
+      description: |
+        Retrieve public user data by their ID.  
+        The response includes `isFollowing` and `isFollowed` fields, which represent the relationship from the perspective of the **current authenticated user**:
+        - `isFollowing = true` → current user follows this user  
+        - `isFollowed = true` → this user follows the current user  
+        - both `true` → they follow each other
+      tags: [User]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user to retrieve
+          schema:
+            type: string
+            example: 7ffef2c5-b775-4c62-8005-46b68a9370ad
+      responses:
+        "200":
+          description: Successfully retrieved user data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: retrieved data successfully
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 7ffef2c5-b775-4c62-8005-46b68a9370ad
+                      username:
+                        type: string
+                        example: mike2000
+                      total_following:
+                        type: integer
+                        example: 1
+                      total_followers:
+                        type: integer
+                        example: 0
+                      currentUser:
+                        type: boolean
+                        example: false
+                      isFollowing:
+                        type: boolean
+                        example: false
+                      isFollowed:
+                        type: boolean
+                        example: false
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 404
+                  message:
+                    type: string
+                    example: failed retrieved data user
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: user not found
+  /user/search:
+    get:
+      summary: Search user by username
+      description: |
+        Search for users by their username.  
+        Requires a valid **Bearer JWT token** in the Authorization header.  
+        Returns a list of users matching the given username query.
+      tags: [User]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: username
+          in: query
+          required: true
+          description: Username to search for
+          schema:
+            type: string
+            example: mike2000
+      responses:
+        "200":
+          description: User(s) found successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: search successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: 7ffef2c5-b775-4c62-8005-46b68a9370ad
+                        username:
+                          type: string
+                          example: mike2000
+                        total_following:
+                          type: integer
+                          example: 1
+                        total_followers:
+                          type: integer
+                          example: 0
+                        currentUser:
+                          type: boolean
+                          example: false
+                        isFollowing:
+                          type: boolean
+                          example: false
+                        isFollowed:
+                          type: boolean
+                          example: false
+        "400":
+          description: Missing username query parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: '"username" query is required'
+        "401":
+          description: Invalid or missing Bearer token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Invalid token
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Token is invalid
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: user not found
+  /follow/{username}:
+    post:
+      summary: Follow another user by username
+      description: |
+        Allows the current authenticated user to follow another user by their username.  
+        Requires a valid Bearer token.  
+        Returns different responses depending on the relationship status:
+        - ✅ Success if user exists and not already followed.  
+        - ⚠️ 409 Conflict if already following.  
+        - ❌ 404 Not found if username does not exist.
+      tags: [Follow]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: The username of the user to follow
+          schema:
+            type: string
+            example: mike2000
+      responses:
+        "200":
+          description: Follow successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: followed successfully
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: now you are following mike2000
+        "401":
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Invalid token
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Token is invalid
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 404
+                  message:
+                    type: string
+                    example: failed to follow user
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: user not found
+        "409":
+          description: Already following the user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 409
+                  message:
+                    type: string
+                    example: failed to follow user
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: you are already following mike2000
+    /follow/{username}:
+    delete:
+      summary: Unfollow a user by username
+      description: |
+        Allows the current authenticated user to **unfollow** another user by their username.  
+        Requires a valid Bearer token.  
+        - ✅ Success if the user is currently followed.  
+        - ⚠️ 400 Bad Request if the user is not followed.  
+        - ❌ 401 Unauthorized if the token is invalid or missing.
+      tags: [Follow]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: The username of the user to unfollow
+          schema:
+            type: string
+            example: mike2000
+      responses:
+        "200":
+          description: Unfollow successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: unfollowed successfully
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: now you are unFollowing mike2000
+        "400":
+          description: User is not currently followed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 400
+                  message:
+                    type: string
+                    example: failed to unfollow user
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: you are not following mike2000
+        "401":
+          description: Invalid or missing Bearer token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Invalid token
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Token is invalid
+  /follow/following/{id}:
+    get:
+      summary: Get list of users that the specified user is following
+      description: |
+        Returns a list of users followed by the specified user ID.  
+        Requires a valid Bearer token in the Authorization header.  
+        If the token is missing or invalid, returns a 401 error.
+      tags: [Follow]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The user ID whose followings you want to retrieve
+          schema:
+            type: string
+            example: eb431356-d8f1-4a29-91e5-d49b47eae85b
+      responses:
+        "200":
+          description: Successfully retrieved followings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: retrieved followings successfully
+                  data:
+                    type: object
+                    properties:
+                      total_following:
+                        type: integer
+                        example: 1
+                      following:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 7ffef2c5-b775-4c62-8005-46b68a9370ad
+                            username:
+                              type: string
+                              example: mike2000
+        "401":
+          description: Invalid or missing Bearer token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Invalid token
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Token is invalid
+        "404":
+          description: User not found or has no followings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 404
+                  message:
+                    type: string
+                    example: failed retrieved followings
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: user not found
+  /follow/followers/{id}:
+    get:
+      summary: Get list of users who follow the specified user
+      description: |
+        Returns a list of all followers for the specified user ID.  
+        Requires a valid Bearer token in the Authorization header.  
+        If the token is missing or invalid, a 401 error will be returned.
+      tags: [Follow]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The user ID whose followers you want to retrieve
+          schema:
+            type: string
+            example: 7ffef2c5-b775-4c62-8005-46b68a9370ad
+      responses:
+        "200":
+          description: Successfully retrieved followers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: retrieved followers successfully
+                  data:
+                    type: object
+                    properties:
+                      total_followers:
+                        type: integer
+                        example: 1
+                      followers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: eb431356-d8f1-4a29-91e5-d49b47eae85b
+                            username:
+                              type: string
+                              example: jays
+        "401":
+          description: Invalid or missing Bearer token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Invalid token
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Token is invalid
+        "404":
+          description: Invalid user ID or no followers found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 404
+                  message:
+                    type: string
+                    example: failed to retrieve followers
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Not valid id
+  /posts:
+    post:
+      summary: Create a new post
+      description: |
+        Create a new post.  
+        Requires a valid Bearer JWT token in the Authorization header.  
+        The `content` field must be included in the request body and must not exceed **200 characters**.
+      tags: [Posts]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  example: how are you friends
+      responses:
+        "200":
+          description: Post created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: create post was successfully
+                  data:
+                    type: object
+                    properties:
+                      content:
+                        type: string
+                        example: how are you friends
+                      created_at:
+                        type: string
+                        format: date-time
+                        example: 2025-11-11T10:31:52.000Z
+        "400":
+          description: Validation error (content exceeds 200 characters)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Validation errors
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: '"content" length must be less than or equal to 200 characters long'
+        "401":
+          description: Invalid or missing Bearer token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Invalid token
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Token is invalid
+  /Posts:
+    get:
+      summary: Get main timeline feed
+      description: |
+        Returns posts from users that the current authenticated user follows.  
+        Requires a valid Bearer JWT token.  
+        Supports pagination using `page` and `limit` query parameters.
+      tags: [Posts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: true
+          description: Page number for pagination
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          required: true
+          description: Number of posts per page
+          schema:
+            type: integer
+            example: 10
+      responses:
+        "200":
+          description: Successfully retrieved timeline posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: get feed successfully
+                  data:
+                    type: object
+                    properties:
+                      posts:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 2ef9b9c1-7ebe-4670-bd75-47a542fa913e
+                            content:
+                              type: string
+                              example: What Is JavaScript Used For?
+                            created_at:
+                              type: string
+                              format: date-time
+                              example: 2025-11-11T10:43:59.000Z
+                            users:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  example: 7ffef2c5-b775-4c62-8005-46b68a9370ad
+                                username:
+                                  type: string
+                                  example: mike2000
+                  pagination:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 10
+                      total_posts:
+                        type: integer
+                        example: 1
+                      total_pages:
+                        type: integer
+                        example: 1
+                      hasNextPage:
+                        type: boolean
+                        example: false
+                      hasPrevPage:
+                        type: boolean
+                        example: false
+        "401":
+          description: Invalid or missing Bearer token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Invalid token
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Token is invalid
+  /posts/{id}:
+    get:
+      summary: Get all posts by user ID
+      description: |
+        Returns all posts created by the specified user ID.  
+        Requires a valid Bearer JWT token in the Authorization header.  
+        The response includes total posts and post details.
+      tags: [Posts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The user ID whose posts will be retrieved
+          schema:
+            type: string
+            example: 7ffef2c5-b775-4c62-8005-46b68a9370ad
+      responses:
+        "200":
+          description: Successfully retrieved user posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: generate post successfully
+                  data:
+                    type: object
+                    properties:
+                      total_posts_content:
+                        type: integer
+                        example: 4
+                      posts:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            owned_post:
+                              type: string
+                              example: mike2000
+                            content_id:
+                              type: string
+                              example: 2ef9b9c1-7ebe-4670-bd75-47a542fa913e
+                            content:
+                              type: string
+                              example: What Is JavaScript Used For?
+                            create_post:
+                              type: string
+                              format: date-time
+                              example: 2025-11-11T10:43:59.000Z
+        "401":
+          description: Invalid or missing Bearer token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Invalid token
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Token is invalid
+        "404":
+          description: User ID not found or has no posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 404
+                  message:
+                    type: string
+                    example: failed to generate posts
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: user not found or has no posts
+  /sessions:
+    get:
+      summary: Get all active sessions for the current user
+      description: |
+        Returns all active sessions associated with the authenticated user.  
+        Each session includes device, IP address, and user agent details.  
+        Requires a valid Bearer JWT token in the Authorization header.
+      tags: [Sessions]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successfully retrieved session data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: retrieve data successfully
+                  data:
+                    type: object
+                    properties:
+                      sessions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 9f3547ec-ed73-41db-8c86-1f7615957462
+                            device:
+                              type: string
+                              example: unknown
+                            ip_address:
+                              type: string
+                              example: ::ffff:172.19.0.1
+                            user_agent:
+                              type: object
+                              properties:
+                                os:
+                                  type: string
+                                  example: unknown
+                                browser:
+                                  type: string
+                                  example: PostmanRuntime
+                                version:
+                                  type: string
+                                  example: 7.44.1
+                                platform:
+                                  type: string
+                                  example: unknown
+                                source:
+                                  type: string
+                                  example: PostmanRuntime/7.44.1
+                            this_session:
+                              type: boolean
+                              example: false
+        "401":
+          description: Invalid or missing Bearer token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Invalid token
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Token is invalid
+  /sessions/logout/{id}:
+    post:
+      summary: Logout a specific session by session ID
+      description: |
+        Logs out a specific user session and revokes its access and refresh tokens.  
+        Requires a valid Bearer JWT token in the Authorization header.
+      tags: [Sessions]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The session ID to logout
+          schema:
+            type: string
+            example: 5015e133-c7b6-4ef5-8341-47a8095eb298
+      responses:
+        "200":
+          description: Successfully logged out the session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: session was logout
+                  data:
+                    type: "null"
+        "401":
+          description: Invalid or missing Bearer token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Invalid token
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Token is invalid
+        "404":
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 404
+                  message:
+                    type: string
+                    example: failed to logout session
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: session not found  
+
+  
+
