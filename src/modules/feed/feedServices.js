@@ -44,10 +44,10 @@ const getMainFeed = async (userId, page, limit) => {
         posts:"feeds not found"
       },
       pagination: {
-        page: currentPage,
+        current_page: currentPage,
         limit: limit,
-        total: 0,
-        totalPages: 0,
+        total_posts: 0,
+        total_pages: 0,
         hasNextPage: false,
         hasPrevPage: false,
       },
@@ -68,10 +68,10 @@ const getMainFeed = async (userId, page, limit) => {
       posts:feeds
     },
     pagination: {
-      page: currentPage,
+      current_page: currentPage,
       limit: limit,
-      total: totalCount,
-      totalPages: totalPages,
+      total_posts: totalCount,
+      total_pages: totalPages,
       hasNextPage: currentPage < totalPages,
       hasPrevPage: currentPage > 1,
     },
