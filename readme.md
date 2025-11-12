@@ -1,11 +1,4 @@
-<invoke name="artifacts">
-<parameter name="type">application/vnd.ant.code</parameter>
-<parameter name="language">markdown</parameter>
-<parameter name="title">README.md</parameter>
-<parameter name="id">nexfeed_readme_file</parameter>
-<parameter name="content"># 🐳 NexFeed Backend
 
-A modern backend service built with Node.js, running entirely inside Docker containers.
 
 ## 🛠️ Tech Stack
 
@@ -67,7 +60,7 @@ docker exec -it backend_nexfeed sh
 
 ```bash
 npm install
-npx prisma migrate deploy
+prisma migrate dev --name init
 npx prisma generate
 ```
 
@@ -83,6 +76,23 @@ Open browser or curl:
 ```bash
 http://localhost:8000/api/v1/health
 ```
+
+### 5. API DOCUMENTATION
+
+Open browser:
+```bash
+http://127.0.0.1:8000/api-docs/
+
+### 🌐 6. Live Server
+
+This project has been deployed using **Railway.app** as the cloud hosting platform.
+
+The backend live server can be accessed here:
+https://backendnexfeed-production.up.railway.app
+
+Documentation:
+https://backendnexfeed-production.up.railway.app/api-docs/ 
+
 
 ---
 
