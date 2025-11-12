@@ -77,14 +77,15 @@ Open browser or curl:
 http://localhost:8000/api/v1/health
 ```
 
-### 5. API DOCUMENTATION
+### 6. API DOCUMENTATION
 
 Open browser:
 ```bash
 http://127.0.0.1:8000/api-docs/
-
+```
 ### 🌐 6. Live Server
 
+```
 This project has been deployed using **Railway.app** as the cloud hosting platform.
 
 The backend live server can be accessed here:
@@ -92,8 +93,7 @@ https://backendnexfeed-production.up.railway.app
 
 Documentation:
 https://backendnexfeed-production.up.railway.app/api-docs/ 
-
-
+```
 ---
 
 ## 📦 Useful Commands
